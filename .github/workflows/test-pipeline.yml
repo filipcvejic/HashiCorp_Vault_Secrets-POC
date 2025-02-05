@@ -15,18 +15,12 @@ jobs:
           token: ${{ secrets.VAULT_TOKEN }}
           tlsSkipVerify: true
           secrets: |
-            termodom/data/office/public/api JWT_KEY | JWT_KEY
+            termodom/data/office/public/api JWT_KEY
 
       - name: Temporary Secret Verification
         env:
           JWT_KEY: ${{ steps.vault.outputs.JWT_KEY }}
         run: |
-          echo "::warning::THIS IS INSECURE - REMOVE THIS STEP AFTER VERIFICATION"
-          echo "|-----------------------------"
-          echo "| Secret Value: $JWT_KEY"
-          echo "|-----------------------------"
-          echo "Secret length: ${#JWT_KEY} characters"
-
           if [ "$JWT_KEY" != "ASd" ]; then
             echo "::error::Secret mismatch!"
             exit 1
