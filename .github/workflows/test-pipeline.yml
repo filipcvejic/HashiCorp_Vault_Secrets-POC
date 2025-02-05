@@ -1,33 +1,33 @@
 name: Retrieve Secrets from Vault
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
-  build:
+  verify-secret:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Retrieve Vault Token
-        run: |
-          echo ${{secrets.VAULT_TOKEN}}
-
       - name: Retrieve Secrets
-        id: vault-secrets
+        id: vault
         uses: hashicorp/vault-action@v2
         with:
           url: https://35.159.32.190:8200
-          method: token
           token: ${{ secrets.VAULT_TOKEN }}
-          secrets: |
-            termodom/data/office/public/api JWT_KEY
           tlsSkipVerify: true
+          secrets: |
+            termodom/data/office/public/api JWT_KEY | JWT_KEY
 
-      - name: Use Retrieved Secret
+      - name: Temporary Secret Verification
+        env:
+          JWT_KEY: ${{ steps.vault.outputs.JWT_KEY }}
         run: |
-          echo "JWT_KEY: ${{ steps.vault-secrets.outputs.JWT_KEY }}"
+          echo "::warning::THIS IS INSECURE - REMOVE THIS STEP AFTER VERIFICATION"
+          echo "|-----------------------------"
+          echo "| Secret Value: $JWT_KEY"
+          echo "|-----------------------------"
+          echo "Secret length: ${#JWT_KEY} characters"
+
+          if [ "$JWT_KEY" != "AS" ]; then
+            echo "::error::Secret mismatch!"
+            exit 1
+          fi
