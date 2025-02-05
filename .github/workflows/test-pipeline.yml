@@ -1,0 +1,29 @@
+name: Retrieve Secrets from Vault
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Retrieve Secrets
+        id: secrets
+        uses: hashicorp/vault-action@v2
+        with:
+          url: https://35.159.32.190:8200
+          method: token
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            termodom/office/public/api | JWT_KEY
+          tlsSkipVerify: true
+
+      - name: Use Retrieved Secret
+        run: |
+          echo "JWT_KEY: ${{ steps.secrets.outputs.JWT_KEY }}"
