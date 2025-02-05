@@ -21,7 +21,7 @@ jobs:
         env:
           JWT_KEY: ${{ steps.vault.outputs.JWT_KEY }}
         run: |
-          if [ "$JWT_KEY" != "ASd" ]; then
+          if [ "$JWT_KEY" != "AS" ]; then
             echo "::error::Secret mismatch!"
             exit 1
           fi
