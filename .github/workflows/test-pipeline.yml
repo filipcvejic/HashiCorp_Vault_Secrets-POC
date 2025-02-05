@@ -27,7 +27,7 @@ jobs:
           echo "|-----------------------------"
           echo "Secret length: ${#JWT_KEY} characters"
 
-          if [ "$JWT_KEY" != "AS" ]; then
+          if [ "$JWT_KEY" != "ASd" ]; then
             echo "::error::Secret mismatch!"
             exit 1
           fi
