@@ -13,17 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Retrieve Vault Token
+        run: |
+          echo ${{secrets.VAULT_TOKEN}}
+
       - name: Retrieve Secrets
-        id: secrets
+        id: vault-secrets
         uses: hashicorp/vault-action@v2
         with:
           url: https://35.159.32.190:8200
           method: token
           token: ${{ secrets.VAULT_TOKEN }}
           secrets: |
-            termodom/office/public/api | JWT_KEY
+            termodom/data/office/public/api JWT_KEY
           tlsSkipVerify: true
 
       - name: Use Retrieved Secret
         run: |
-          echo "JWT_KEY: ${{ steps.secrets.outputs.JWT_KEY }}"
+          echo "JWT_KEY: ${{ steps.vault-secrets.outputs.JWT_KEY }}"
