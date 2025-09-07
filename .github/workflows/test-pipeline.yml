@@ -11,17 +11,19 @@ jobs:
         id: vault
         uses: hashicorp/vault-action@v2
         with:
-          url: https://35.159.32.190:8200
+          url: "<YOUR_VAULT_URL>"
           token: ${{ secrets.VAULT_TOKEN }}
           tlsSkipVerify: true
           secrets: |
-            termodom/data/office/public/api JWT_KEY
+            <engine>/data/<secret_path> <ENV_VAR_NAME>
 
-      - name: Temporary Secret Verification
+      - name: Verify Retrieved Secret
         env:
-          JWT_KEY: ${{ steps.vault.outputs.JWT_KEY }}
+          JWT_KEY: ${{ steps.vault.outputs.<ENV_VAR_NAME> }}
         run: |
-          if [ "$JWT_KEY" != "AS" ]; then
-            echo "::error::Secret mismatch!"
+          if [ "$<ENV_VAR_NAME>" != "<EXPECTED_VALUE>" ]; then
+            echo "::error::❌ Secret mismatch! Expected <EXPECTED_VALUE> but got $<ENV_VAR_NAME>"
             exit 1
+          else
+            echo "✅ Secret matches expected value!"
           fi
